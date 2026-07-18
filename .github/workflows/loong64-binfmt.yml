@@ -1,7 +1,6 @@
 name: Sync loong64 binfmt Image
 
 on:
-  push:
   schedule:
     - cron: '23 7 * * *'
   workflow_dispatch:
