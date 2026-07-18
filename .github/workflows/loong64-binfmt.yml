@@ -13,6 +13,11 @@ on:
         required: true
         type: string
         default: 'latest'
+      target_name:
+        description: 'target image name'
+        required: false
+        type: string
+        default: 'loong64-binfmt'
 
 env:
   NAMESPACE: ${{ vars.NAMESPACE || 'kubernetesloong64' }}
@@ -59,10 +64,9 @@ jobs:
 
       - name: env
         run: |
-          SOURCE_NAME="${{ inputs.source_image }}"
-          TARGET_NAME="${SOURCE_NAME##*/}"
           TAG="${{ inputs.source_tag }}"
-          IMAGE="$SOURCE_NAME:$TAG"
+          IMAGE="${{ inputs.source_image }}:$TAG"
+          TARGET_NAME="${{ inputs.target_name }}"
           TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ vars.NAMESPACE }}/$TARGET_NAME:$TAG"
 
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
@@ -93,9 +97,8 @@ jobs:
 
       - name: env
         run: |
-          SOURCE_NAME="${{ inputs.source_image }}"
-          TARGET_NAME="${SOURCE_NAME##*/}"
           TAG="${{ inputs.source_tag }}"
+          TARGET_NAME="${{ inputs.target_name }}"
           TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ vars.NAMESPACE }}/$TARGET_NAME:$TAG"
 
           echo "TARGET_IMAGE=$TARGET_IMAGE" >> $GITHUB_ENV
