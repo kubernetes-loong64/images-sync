@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Setup binfmt for loong64
         run: |
-          docker run --rm --privileged ghcr.io/loong64/binfmt
+          docker run --rm --privileged ghcr.io/loong64/binfmt --install all
 
       - name: docker info
         run: docker info
