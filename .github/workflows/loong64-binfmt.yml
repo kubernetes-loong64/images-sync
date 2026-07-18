@@ -2,7 +2,7 @@ name: Sync ghcr.io/loong64/binfmt
 
 on:
   schedule:
-    - cron: '23 7 * * *'
+    - cron: '23 7 * * 2'
   workflow_dispatch:
     inputs:
       source_image:

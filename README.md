@@ -9,7 +9,7 @@ multi-architecture (including loong64) image pulls, pushes, and manifest merging
 
 | Workflow                                               | Source Image             | Target Image                                                        | Description                           | Schedule   |
 |--------------------------------------------------------|--------------------------|---------------------------------------------------------------------|---------------------------------------|------------|
-| [loong64-binfmt](.github/workflows/loong64-binfmt.yml) | `ghcr.io/loong64/binfmt` | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/loong64-binfmt` | binfmt support image for loong64 arch | Daily      |
+| [loong64-binfmt](.github/workflows/loong64-binfmt.yml) | `ghcr.io/loong64/binfmt` | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/loong64-binfmt` | binfmt support image for loong64 arch | Weekly Tue |
 | [anolis](.github/workflows/anolis.yml)                 | `openanolis/anolisos`    | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/anolisos`       | Anolis OS base image                  | Weekly Tue |
 
 ### How It Works
