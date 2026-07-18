@@ -69,7 +69,7 @@ jobs:
           TAG="${{ inputs.source_tag }}"
           IMAGE="${{ inputs.source_image }}:$TAG"
           TARGET_NAME="${{ inputs.target_name }}"
-          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ vars.NAMESPACE }}/$TARGET_NAME:$TAG"
+          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ env.NAMESPACE }}/$TARGET_NAME:$TAG"
 
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
           echo "TARGET_IMAGE=$TARGET_IMAGE" >> $GITHUB_ENV
@@ -101,7 +101,7 @@ jobs:
         run: |
           TAG="${{ inputs.source_tag }}"
           TARGET_NAME="${{ inputs.target_name }}"
-          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ vars.NAMESPACE }}/$TARGET_NAME:$TAG"
+          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ env.NAMESPACE }}/$TARGET_NAME:$TAG"
 
           echo "TARGET_IMAGE=$TARGET_IMAGE" >> $GITHUB_ENV
 
