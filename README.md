@@ -1,22 +1,29 @@
+## Project Description
+
 <p align="center"><a href="README.md">English</a> | <a href="README-zh.md">中文</a></p>
 
-## Verifying releases
+This project uses GitHub Actions to automatically sync container images to a target registry, supporting
+multi-architecture (including loong64) image pulls, pushes, and manifest merging.
 
-- Releases are signed with GPG.
-- Download the public key from [keys.openpgp.org](https://keys.openpgp.org).
-- Fingerprint: [FCF8724722CCBF9F51B1FBE376532BE7E3013105](https://keys.openpgp.org/debug?q=FCF8724722CCBF9F51B1FBE376532BE7E3013105)
-- [Manual download](https://keys.openpgp.org/vks/v1/by-fingerprint/FCF8724722CCBF9F51B1FBE376532BE7E3013105)
+### Workflows
 
-```shell
-gpg --keyserver keys.openpgp.org --recv-keys FCF8724722CCBF9F51B1FBE376532BE7E3013105
-echo "FCF8724722CCBF9F51B1FBE376532BE7E3013105:6:" | gpg --import-ownertrust
-```
+| Workflow                                               | Source Image             | Target Image                                                        | Description                           | Schedule   |
+|--------------------------------------------------------|--------------------------|---------------------------------------------------------------------|---------------------------------------|------------|
+| [loong64-binfmt](.github/workflows/loong64-binfmt.yml) | `ghcr.io/loong64/binfmt` | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/loong64-binfmt` | binfmt support image for loong64 arch | Daily      |
+| [anolis](.github/workflows/anolis.yml)                 | `openanolis/anolisos`    | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/anolisos`       | Anolis OS base image                  | Weekly Tue |
 
-Or download the key file manually and import it:
+### How It Works
 
-```shell
-gpg --import /tmp/xxx
-```
+1. Fetch the source image manifest and parse all architecture entries
+2. Pull images per architecture (`docker pull --platform`)
+3. Retag and push to the target registry (`TARGET_IMAGE-<arch>`)
+4. Create and push a multi-architecture manifest, merging all architectures into a unified image tag
+
+### Configuration
+
+- `vars.SYNC_REGISTRY` — Target registry address (`registry.cn-qingdao.aliyuncs.com`)
+- `vars.SYNC_REGISTRY_USERNAME` / `secrets.SYNC_REGISTRY_PASSWORD` — Target registry authentication
+- `vars.NAMESPACE` — Target namespace (default: `kubernetesloong64`)
 
 ## License
 
