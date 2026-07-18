@@ -62,7 +62,7 @@ jobs:
     steps:
       - name: docker login ${{ vars.SYNC_REGISTRY }}
         run: |
-          echo "${{ secrets.SYNC_REGISTRY_PASSWORD }}" | docker login "${{ vars.SYNC_REGISTRY }}" --username "${{ secrets.SYNC_REGISTRY_USERNAME }}" --password-stdin
+          echo "${{ secrets.SYNC_REGISTRY_PASSWORD }}" | docker login "${{ vars.SYNC_REGISTRY }}" --username "${{ vars.SYNC_REGISTRY_USERNAME }}" --password-stdin
 
       - name: env
         run: |
@@ -95,7 +95,7 @@ jobs:
     steps:
       - name: docker login ${{ vars.SYNC_REGISTRY }}
         run: |
-          echo "${{ secrets.SYNC_REGISTRY_PASSWORD }}" | docker login "${{ vars.SYNC_REGISTRY }}" --username "${{ secrets.SYNC_REGISTRY_USERNAME }}" --password-stdin
+          echo "${{ secrets.SYNC_REGISTRY_PASSWORD }}" | docker login "${{ vars.SYNC_REGISTRY }}" --username "${{ vars.SYNC_REGISTRY_USERNAME }}" --password-stdin
 
       - name: env
         run: |
