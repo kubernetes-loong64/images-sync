@@ -10,6 +10,7 @@
 |--------------------------------------------------------|--------------------------|---------------------------------------------------------------------|-----------------------------------|--------|
 | [loong64-binfmt](.github/workflows/loong64-binfmt.yml) | `ghcr.io/loong64/binfmt` | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/loong64-binfmt` | loong64 架构的 binfmt 支持镜像    | 每周二 |
 | [anolis](.github/workflows/anolis.yml)                 | `openanolis/anolisos`    | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/anolisos`       | 龙蜥操作系统（Anolis OS）基础镜像 | 每周二 |
+| [moby-buildkit](.github/workflows/moby-buildkit.yml)   | `moby/buildkit`          | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/moby-buildkit`  | moby/buildkit 镜像同步            | 每周二 |
 
 ### 工作原理
 
