@@ -112,9 +112,9 @@ jobs:
           for arch in $(echo '${{ needs.matrix.outputs.platform }}' | jq -r '.[]'); do
             IMAGES="${IMAGES:+$IMAGES }$TARGET_IMAGE-$arch"
           done
-          docker manifest create "$TARGET_IMAGE" $IMAGES
+          docker manifest create --amend "$TARGET_IMAGE" $IMAGES
           for arch in $(echo '${{ needs.matrix.outputs.platform }}' | jq -r '.[]'); do
-            docker manifest annotate "$TARGET_IMAGE" "$TARGET_IMAGE-$arch" --arch "$arch"
+            docker manifest annotate "$TARGET_IMAGE" "$TARGET_IMAGE-$arch" --os linux --arch "$arch"
           done
 
       - name: docker manifest push
