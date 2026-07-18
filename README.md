@@ -7,11 +7,12 @@ multi-architecture (including loong64) image pulls, pushes, and manifest merging
 
 ### Workflows
 
-| Workflow                                               | Source Image             | Target Image                                                        | Description                           | Schedule   |
-|--------------------------------------------------------|--------------------------|---------------------------------------------------------------------|---------------------------------------|------------|
-| [loong64-binfmt](.github/workflows/loong64-binfmt.yml) | `ghcr.io/loong64/binfmt` | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/loong64-binfmt` | binfmt support image for loong64 arch | Weekly Tue |
-| [anolis](.github/workflows/anolis.yml)                 | `openanolis/anolisos`    | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/anolisos`       | Anolis OS base image                  | Weekly Tue |
-| [moby-buildkit](.github/workflows/moby-buildkit.yml)   | `moby/buildkit`          | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/moby-buildkit`  | moby/buildkit image sync              | Weekly Tue |
+| Workflow                                                   | Source Image               | Target Image                                                          | Description                           | Schedule   |
+|------------------------------------------------------------|----------------------------|-----------------------------------------------------------------------|---------------------------------------|------------|
+| [anolis](.github/workflows/anolis.yml)                     | `openanolis/anolisos`      | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/anolisos`         | Anolis OS base image                  | Weekly Tue |
+| [loong64-binfmt](.github/workflows/loong64-binfmt.yml)     | `ghcr.io/loong64/binfmt`   | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/loong64-binfmt`   | binfmt support image for loong64 arch | Weekly Tue |
+| [loong64-buildkit](.github/workflows/loong64-buildkit.yml) | `ghcr.io/loong64/buildkit` | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/loong64-buildkit` | loong64 buildkit image sync           | Weekly Tue |
+| [moby-buildkit](.github/workflows/moby-buildkit.yml)       | `moby/buildkit`            | `registry.cn-qingdao.aliyuncs.com/kubernetesloong64/moby-buildkit`    | moby/buildkit image sync              | Weekly Tue |
 
 ### How It Works
 
