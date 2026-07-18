@@ -107,15 +107,11 @@ jobs:
 
       - name: docker manifest create
         run: |
-          set -euo pipefail
           IMAGES=""
           for arch in $(echo '${{ needs.matrix.outputs.platform }}' | jq -r '.[]'); do
-            IMAGES="${IMAGES:+$IMAGES }$TARGET_IMAGE-$arch"
+            IMAGES="$IMAGES $TARGET_IMAGE-$arch"
           done
-          docker manifest create --amend "$TARGET_IMAGE" $IMAGES
-          for arch in $(echo '${{ needs.matrix.outputs.platform }}' | jq -r '.[]'); do
-            docker manifest annotate "$TARGET_IMAGE" "$TARGET_IMAGE-$arch" --os linux --arch "$arch"
-          done
+          docker manifest create $TARGET_IMAGE $IMAGES
 
       - name: docker manifest push
         run: |
