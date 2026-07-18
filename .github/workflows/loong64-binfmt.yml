@@ -1,0 +1,117 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_image:
+        description: 'source image (e.g. ghcr.io/loong64/binfmt)'
+        required: true
+        type: string
+        default: 'ghcr.io/loong64/binfmt'
+      source_tag:
+        description: 'source image tag'
+        required: true
+        type: string
+        default: 'latest'
+
+env:
+  NAMESPACE: ${{ vars.NAMESPACE || 'kubernetesloong64' }}
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      platform: ${{ steps.platform.outputs.platform }}
+    steps:
+      - name: Setup binfmt for loong64
+        run: |
+          docker run --rm --privileged ghcr.io/loong64/binfmt
+
+      - name: docker info
+        run: docker info
+
+      - name: env
+        id: env
+        run: |
+          IMAGE="${{ inputs.source_image }}:${{ inputs.source_tag }}"
+          echo "IMAGE=$IMAGE"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      - name: platform
+        id: platform
+        run: |
+          PLATFORM=$(docker manifest inspect "$IMAGE" | jq -rc 'if .manifests then [.manifests[].platform.architecture | select(. != "unknown")] else ["amd64"] end')
+          echo "platform=$PLATFORM"
+          echo "platform=$PLATFORM" >> $GITHUB_OUTPUT
+
+  build:
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(needs.matrix.outputs.platform) }}
+
+    steps:
+      - name: docker login ${{ vars.SYNC_REGISTRY }}
+        run: |
+          echo "${{ secrets.SYNC_REGISTRY_PASSWORD }}" | docker login "${{ vars.SYNC_REGISTRY }}" --username "${{ secrets.SYNC_REGISTRY_USERNAME }}" --password-stdin
+
+      - name: env
+        run: |
+          SOURCE_NAME="${{ inputs.source_image }}"
+          TARGET_NAME="${SOURCE_NAME##*/}"
+          TAG="${{ inputs.source_tag }}"
+          IMAGE="$SOURCE_NAME:$TAG"
+          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ vars.NAMESPACE }}/$TARGET_NAME:$TAG"
+
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          echo "TARGET_IMAGE=$TARGET_IMAGE" >> $GITHUB_ENV
+
+      - name: docker pull ${{ matrix.platform }}
+        run: |
+          docker images
+          docker pull --platform=linux/${{ matrix.platform }} "$IMAGE"
+          docker images
+
+      - name: docker tag
+        run: |
+          docker tag "$IMAGE" "$TARGET_IMAGE-${{ matrix.platform }}"
+          docker images
+
+      - name: docker push
+        run: |
+          docker push "$TARGET_IMAGE-${{ matrix.platform }}"
+
+  merge:
+    needs: [ matrix, build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: docker login ${{ vars.SYNC_REGISTRY }}
+        run: |
+          echo "${{ secrets.SYNC_REGISTRY_PASSWORD }}" | docker login "${{ vars.SYNC_REGISTRY }}" --username "${{ secrets.SYNC_REGISTRY_USERNAME }}" --password-stdin
+
+      - name: env
+        run: |
+          SOURCE_NAME="${{ inputs.source_image }}"
+          TARGET_NAME="${SOURCE_NAME##*/}"
+          TAG="${{ inputs.source_tag }}"
+          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ vars.NAMESPACE }}/$TARGET_NAME:$TAG"
+
+          echo "TARGET_IMAGE=$TARGET_IMAGE" >> $GITHUB_ENV
+
+      - name: docker manifest create
+        run: |
+          set -euo pipefail
+          IMAGES=""
+          for arch in $(echo '${{ needs.matrix.outputs.platform }}' | jq -r '.[]'); do
+            IMAGES="${IMAGES:+$IMAGES }$TARGET_IMAGE-$arch"
+          done
+          docker manifest create "$TARGET_IMAGE" $IMAGES
+          for arch in $(echo '${{ needs.matrix.outputs.platform }}' | jq -r '.[]'); do
+            docker manifest annotate "$TARGET_IMAGE" "$TARGET_IMAGE-$arch" --arch "$arch"
+          done
+
+      - name: docker manifest push
+        run: |
+          docker manifest push "$TARGET_IMAGE"
