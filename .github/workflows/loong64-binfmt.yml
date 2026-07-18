@@ -1,4 +1,4 @@
-name: Sync loong64 binfmt Image
+name: Sync ghcr.io/loong64/binfmt
 
 on:
   schedule:
