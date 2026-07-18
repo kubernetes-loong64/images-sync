@@ -1,6 +1,9 @@
-name: Docker Image CI
+name: Sync loong64 binfmt Image
 
 on:
+  push:
+  schedule:
+    - cron: '23 7 * * *'
   workflow_dispatch:
     inputs:
       source_image:
