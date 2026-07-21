@@ -1,6 +1,7 @@
 name: Sync openanolis/anolisos
 
 on:
+  push:
   schedule:
     - cron: '23 7 * * 2'
   workflow_dispatch:
@@ -23,6 +24,9 @@ on:
 
 env:
   NAMESPACE: ${{ vars.NAMESPACE || 'kubernetesloong64' }}
+  SOURCE_IMAGE: ${{ inputs.source_image || 'openanolis/anolisos' }}
+  SOURCE_TAG: ${{ inputs.source_tag || '23.4' }}
+  TARGET_NAME: ${{ inputs.target_name || 'anolisos' }}
 
 jobs:
   matrix:
@@ -33,16 +37,10 @@ jobs:
       - name: docker info
         run: docker info
 
-      - name: env
-        id: env
-        run: |
-          IMAGE="${{ inputs.source_image }}:${{ inputs.source_tag }}"
-          echo "IMAGE=$IMAGE"
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-
       - name: platform
         id: platform
         run: |
+          IMAGE="${{ env.SOURCE_IMAGE }}:${{ env.SOURCE_TAG }}"
           PLATFORM=$(docker manifest inspect "$IMAGE" | jq -rc 'if .manifests then [.manifests[].platform.architecture | select(. != "unknown")] else ["amd64"] end')
           echo "platform=$PLATFORM"
           echo "platform=$PLATFORM" >> $GITHUB_OUTPUT
@@ -62,10 +60,8 @@ jobs:
 
       - name: env
         run: |
-          TAG="${{ inputs.source_tag }}"
-          IMAGE="${{ inputs.source_image }}:$TAG"
-          TARGET_NAME="${{ inputs.target_name }}"
-          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ env.NAMESPACE }}/$TARGET_NAME:$TAG"
+          IMAGE="${{ env.SOURCE_IMAGE }}:${{ env.SOURCE_TAG }}"
+          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.TARGET_NAME }}:${{ env.SOURCE_TAG }}"
 
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
           echo "TARGET_IMAGE=$TARGET_IMAGE" >> $GITHUB_ENV
@@ -95,9 +91,7 @@ jobs:
 
       - name: env
         run: |
-          TAG="${{ inputs.source_tag }}"
-          TARGET_NAME="${{ inputs.target_name }}"
-          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ env.NAMESPACE }}/$TARGET_NAME:$TAG"
+          TARGET_IMAGE="${{ vars.SYNC_REGISTRY }}/${{ env.NAMESPACE }}/${{ env.TARGET_NAME }}:${{ env.SOURCE_TAG }}"
 
           echo "TARGET_IMAGE=$TARGET_IMAGE" >> $GITHUB_ENV
 
